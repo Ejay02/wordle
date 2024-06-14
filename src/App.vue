@@ -2,8 +2,18 @@
 import SimpleKeyboard from "./components/SimpleKeyboard.vue";
 import WordRow from "./components/WordRow.vue";
 import { reactive, onMounted, computed } from "vue";
+
+  function generateRandomWord() {
+  const letters = 'abcdefghijklmnopqrstuvwxyz';
+  let word = '';
+  for (let i = 0; i < 5; i++) {
+    word += letters.charAt(Math.floor(Math.random() * letters.length));
+  }
+  return word;
+}
+  
 const state = reactive({
-  solution: "books",
+  solution: "",
   guesses: ["", "", "", "", "", ""],
   currentGuessIndex: 0,
   guessedLetters: {
@@ -16,7 +26,8 @@ const wonGame = computed(
   () => state.guesses[state.currentGuessIndex - 1] === state.solution
 );
 const lostGame = computed(() => !wonGame.value && state.currentGuessIndex >= 6);
-const handleInput = (key) => {
+
+  const handleInput = (key) => {
   if (state.currentGuessIndex >= 6 || wonGame.value) {
     return;
   }
@@ -50,10 +61,15 @@ const handleInput = (key) => {
   }
 };
 
-  const playAgain = () => {
+const playAgain = () => {
+  state.solution = generateRandomWord();
   state.guesses = ["", "", "", "", "", ""];
   state.currentGuessIndex = 0;
-  state.guessedLetters = { ...state.guessedLetters, miss: [], found: [], hint: [] };
+  state.guessedLetters = {
+    miss: [],
+    found: [],
+    hint: [],
+  };
 };
   
 onMounted(() => {
