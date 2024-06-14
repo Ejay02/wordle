@@ -53,11 +53,7 @@ const handleInput = (key) => {
   const playAgain = () => {
   state.guesses = ["", "", "", "", "", ""];
   state.currentGuessIndex = 0;
-  state.guessedLetters = {
-    miss: [],
-    found: [],
-    hint: [],
-  };
+  state.guessedLetters = { ...state.guessedLetters, miss: [], found: [], hint: [] };
 };
   
 onMounted(() => {
