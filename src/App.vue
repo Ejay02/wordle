@@ -49,6 +49,17 @@ const handleInput = (key) => {
     }
   }
 };
+
+  const playAgain = () => {
+  state.guesses = ["", "", "", "", "", ""];
+  state.currentGuessIndex = 0;
+  state.guessedLetters = {
+    miss: [],
+    found: [],
+    hint: [],
+  };
+};
+  
 onMounted(() => {
   window.addEventListener("keyup", (e) => {
     e.preventDefault();
@@ -80,6 +91,9 @@ onMounted(() => {
       @onKeyPress="handleInput"
       :guessedLetters="state.guessedLetters"
     />
+     <button v-if="wonGame || lostGame" @click="playAgain" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+      Play Again
+    </button>
   </div>
 </template>
 
