@@ -2,18 +2,8 @@
 import SimpleKeyboard from "./components/SimpleKeyboard.vue";
 import WordRow from "./components/WordRow.vue";
 import { reactive, onMounted, computed } from "vue";
-
-  function generateRandomWord() {
-  const letters = 'abcdefghijklmnopqrstuvwxyz';
-  let word = '';
-  for (let i = 0; i < 5; i++) {
-    word += letters.charAt(Math.floor(Math.random() * letters.length));
-  }
-  return word;
-}
-  
 const state = reactive({
-  solution: "",
+  solution: "books",
   guesses: ["", "", "", "", "", ""],
   currentGuessIndex: 0,
   guessedLetters: {
@@ -26,8 +16,7 @@ const wonGame = computed(
   () => state.guesses[state.currentGuessIndex - 1] === state.solution
 );
 const lostGame = computed(() => !wonGame.value && state.currentGuessIndex >= 6);
-
-  const handleInput = (key) => {
+const handleInput = (key) => {
   if (state.currentGuessIndex >= 6 || wonGame.value) {
     return;
   }
@@ -60,18 +49,6 @@ const lostGame = computed(() => !wonGame.value && state.currentGuessIndex >= 6);
     }
   }
 };
-
-const playAgain = () => {
-  state.solution = generateRandomWord();
-  state.guesses = ["", "", "", "", "", ""];
-  state.currentGuessIndex = 0;
-  state.guessedLetters = {
-    miss: [],
-    found: [],
-    hint: [],
-  };
-};
-  
 onMounted(() => {
   window.addEventListener("keyup", (e) => {
     e.preventDefault();
@@ -103,9 +80,6 @@ onMounted(() => {
       @onKeyPress="handleInput"
       :guessedLetters="state.guessedLetters"
     />
-     <button v-if="wonGame || lostGame" @click="playAgain" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-      Play Again
-    </button>
   </div>
 </template>
 
