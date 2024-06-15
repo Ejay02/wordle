@@ -16,7 +16,6 @@ const state = reactive({
   },
 });
 
-
 const wonGame = computed(
   () => state.guesses[state.currentGuessIndex - 1] === state.solution
 );
@@ -107,40 +106,38 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="pt-5">
-    <div class="flex flex-col h-screen max-w-md mx-auto justify-evenly">
-      <div>
-        <word-row
-          v-for="(guess, i) in state.guesses"
-          :key="i"
-          :value="guess"
-          :solution="state.solution"
-          :submitted="i < state.currentGuessIndex"
-        />
-      </div>
-      <p v-if="wonGame" class="text-center">🏆 Congratulation! you solved it.</p>
-      <div v-else-if="lostGame" class="text-center">
-        <p class="text-center">😔 Out of tries.</p>
-        <p>
-          The correct word :
-          <span class="bg-cyan-500 p-1 rounded m-2">
-            {{ state.solution }}
-          </span>
-        </p>
-      </div>
-      <simple-keyboard
-        @onKeyPress="handleInput"
-        :guessedLetters="state.guessedLetters"
+  <div class="flex flex-col h-screen max-w-md mx-auto justify-evenly">
+    <div>
+      <word-row
+        v-for="(guess, i) in state.guesses"
+        :key="i"
+        :value="guess"
+        :solution="state.solution"
+        :submitted="i < state.currentGuessIndex"
       />
-
-      <button
-        v-if="wonGame || lostGame"
-        @click="resetGame"
-        class="mt-4 p-2 bg-cyan-500 text-white rounded"
-      >
-        Play Again
-      </button>
     </div>
+    <p v-if="wonGame" class="text-center">🏆 Congratulations! you solved it.</p>
+    <div v-else-if="lostGame" class="text-center">
+      <p class="text-center">😔 Out of tries.</p>
+      <p>
+        The correct word :
+        <span class="bg-cyan-500 p-1 rounded m-2">
+          {{ state.solution }}
+        </span>
+      </p>
+    </div>
+    <simple-keyboard
+      @onKeyPress="handleInput"
+      :guessedLetters="state.guessedLetters"
+    />
+
+    <button
+      v-if="wonGame || lostGame"
+      @click="resetGame"
+      class="mt-4 p-2 bg-cyan-500 text-white rounded"
+    >
+      Play Again
+    </button>
   </div>
 </template>
 
