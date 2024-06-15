@@ -1,9 +1,12 @@
 <script setup>
 import SimpleKeyboard from "./components/SimpleKeyboard.vue";
 import WordRow from "./components/WordRow.vue";
-import { reactive, onMounted, computed } from "vue";
+import { reactive, onMounted, computed, watch } from "vue";
+import { generate, count } from "random-words";
+import confetti from "canvas-confetti";
+
 const state = reactive({
-  solution: "books",
+  solution: generate({ minLength: 5, maxLength: 5 }),
   guesses: ["", "", "", "", "", ""],
   currentGuessIndex: 0,
   guessedLetters: {
@@ -12,10 +15,13 @@ const state = reactive({
     hint: [],
   },
 });
+
+
 const wonGame = computed(
   () => state.guesses[state.currentGuessIndex - 1] === state.solution
 );
 const lostGame = computed(() => !wonGame.value && state.currentGuessIndex >= 6);
+
 const handleInput = (key) => {
   if (state.currentGuessIndex >= 6 || wonGame.value) {
     return;
@@ -49,6 +55,43 @@ const handleInput = (key) => {
     }
   }
 };
+
+const resetGame = () => {
+  window.location.reload();
+};
+
+watch(wonGame, (newValue) => {
+  if (newValue) {
+    var duration = 15 * 1000;
+    var animationEnd = Date.now() + duration;
+    var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+    function randomInRange(min, max) {
+      return Math.random() * (min - max) + min;
+    }
+    var interval = setInterval(function () {
+      var timeLeft = animationEnd - Date.now();
+
+      if (timeLeft <= 0) {
+        return clearInterval(interval);
+      }
+
+      var particleCount = 50 * (timeLeft / duration);
+      // since particles fall down, start a bit higher than random
+      confetti({
+        ...defaults,
+        particleCount,
+        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+      });
+      confetti({
+        ...defaults,
+        particleCount,
+        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+      });
+    }, 250);
+  }
+});
+
 onMounted(() => {
   window.addEventListener("keyup", (e) => {
     e.preventDefault();
@@ -64,22 +107,40 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="flex flex-col h-screen max-w-md mx-auto justify-evenly">
-    <div>
-      <word-row
-        v-for="(guess, i) in state.guesses"
-        :key="i"
-        :value="guess"
-        :solution="state.solution"
-        :submitted="i < state.currentGuessIndex"
+  <div class="pt-5">
+    <div class="flex flex-col h-screen max-w-md mx-auto justify-evenly">
+      <div>
+        <word-row
+          v-for="(guess, i) in state.guesses"
+          :key="i"
+          :value="guess"
+          :solution="state.solution"
+          :submitted="i < state.currentGuessIndex"
+        />
+      </div>
+      <p v-if="wonGame" class="text-center">🏆 Congratulation! you solved it.</p>
+      <div v-else-if="lostGame" class="text-center">
+        <p class="text-center">😔 Out of tries.</p>
+        <p>
+          The correct word :
+          <span class="bg-cyan-500 p-1 rounded m-2">
+            {{ state.solution }}
+          </span>
+        </p>
+      </div>
+      <simple-keyboard
+        @onKeyPress="handleInput"
+        :guessedLetters="state.guessedLetters"
       />
+
+      <button
+        v-if="wonGame || lostGame"
+        @click="resetGame"
+        class="mt-4 p-2 bg-cyan-500 text-white rounded"
+      >
+        Play Again
+      </button>
     </div>
-    <p v-if="wonGame" class="text-center">🏆 Congrats you solved it!</p>
-    <p v-else-if="lostGame" class="text-center">😔 Out of tries.</p>
-    <simple-keyboard
-      @onKeyPress="handleInput"
-      :guessedLetters="state.guessedLetters"
-    />
   </div>
 </template>
 

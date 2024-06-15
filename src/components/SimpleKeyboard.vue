@@ -6,6 +6,8 @@
 import Keyboard from "simple-keyboard";
 import "simple-keyboard/build/css/index.css";
 import { ref, onMounted, watch } from "vue";
+
+
 const emit = defineEmits(["onKeyPress"]);
 const props = defineProps({
   guessedLetters: Object,
@@ -14,18 +16,20 @@ const keyboard = ref(null);
 const onKeyPress = (button) => {
   emit("onKeyPress", button);
 };
+
 onMounted(() => {
   keyboard.value = new Keyboard("simple-keyboard", {
     layout: {
       default: [
         "q w e r t y u i o p",
         "a s d f g h j k l",
-        "{enter} z x c v b n m {bksp}",
+        "{bksp} z x c v b n m {enter}",
       ],
     },
     onKeyPress: onKeyPress,
   });
 });
+
 watch(
   () => props.guessedLetters,
   (guessedLetters, prevGuessedLetters) => {
