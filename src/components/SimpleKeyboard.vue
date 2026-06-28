@@ -30,6 +30,9 @@ onMounted(() => {
   });
 });
 
+
+// TODO - Update this
+
 watch(
   () => props.guessedLetters,
   (guessedLetters, prevGuessedLetters) => {
